@@ -1,4 +1,8 @@
+import os
+
 from pydantic_settings import BaseSettings
+
+_env_file = os.getenv("ENV_FILE", ".env.local")
 
 
 class Settings(BaseSettings):
@@ -18,7 +22,7 @@ class Settings(BaseSettings):
     API_DELAY_SECONDS: float = 0
 
     model_config = {
-        "env_file": ".env.local",
+        "env_file": _env_file,
         "env_file_encoding": "utf-8",
         "extra": "ignore",
     }
