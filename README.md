@@ -19,7 +19,7 @@ brew install python@3.12
 ```
 
 Verify the installation:
-
+ß
 ```bash
 python3.12 --version
 ```
@@ -82,184 +82,11 @@ mongodb://localhost:27017
 
 After the API starts, you will see the `iflow_dev` database with `users` and `user_sessions` collections.
 
-## Authentication Flow
 
-Authentication is fully cookie-based. The browser/client does not need to store or attach tokens manually.
-
-1. **Login** (`POST /api/auth/google`) sets two HttpOnly cookies: `access_token` and `refresh_token`.
-2. **Protected endpoints** (e.g. `GET /api/profile`) authenticate automatically via the `access_token` cookie.
-3. **Refresh** (`POST /api/auth/refresh`) rotates both cookies transparently.
-4. **Logout** (`POST /api/auth/logout`) revokes the session and clears both cookies.
-
-An `Authorization: Bearer <token>` header is also accepted as fallback for development tools, but cookies take priority.
-
-## API Endpoints
-
-### Health Check
-
-```
-GET /api/health
-```
-
-**Response:**
-
-```json
-{ "status": "ok" }
-```
-
-### Beta Signup (allowlist enrollment)
-
-The API runs in closed-beta mode by default (`ALLOWLIST_ENABLED=true`).
-Only emails registered in the allowlist can log in with Google.
-
-```
-POST /api/auth/signup
-Content-Type: application/json
-
-{
-  "email": "user@gmail.com",
-  "signup_secret": "<BETA_SIGNUP_SECRET from .env.local>"
-}
-```
-
-**Response:**
-
-```json
-{ "ok": true }
-```
-
-After signing up, the user can log in via the Google endpoint below.
-
-To disable the allowlist and allow any Google email (open mode), set `ALLOWLIST_ENABLED=false` in your env vars.
-
-### Google Login
-
-```
-POST /api/auth/google
-Content-Type: application/json
-
-{
-  "id_token": "<google-id-token-from-frontend>"
-}
-```
-
-**Response:**
-
-```json
-{ "ok": true }
-```
-
-Sets HttpOnly cookies: `access_token` and `refresh_token`.
-
-### Refresh Token
-
-```
-POST /api/auth/refresh
-```
-
-The `refresh_token` cookie is sent automatically by the browser.
-
-**Response:**
-
-```json
-{ "ok": true }
-```
-
-Both cookies are rotated automatically.
-
-### Logout
-
-```
-POST /api/auth/logout
-```
-
-**Response:**
-
-```json
-{ "ok": true }
-```
-
-Revokes the session and clears both cookies.
-
-### Get Profile (protected)
-
-```
-GET /api/profile
-```
-
-Authenticated via the `access_token` cookie (sent automatically by the browser).
-
-**Response:**
-
-```json
-{
-  "user": {
-    "id": "665f...",
-    "email": "user@example.com",
-    "full_name": "Jane Doe",
-    "avatar_url": "https://..."
-  },
-  "preferences": {
-    "display_currency": "USD"
-  },
-  "exchange_rate": {
-    "reference_date": "2026-03-05",
-    "usd_to_ars_rate": 1450
-  }
-}
-```
-
-## Testing with Postman
-
-Postman must be configured to preserve cookies across requests.
-
-1. **Health**: `GET http://localhost:8000/api/health` -- no headers needed.
-2. **Signup**: `POST http://localhost:8000/api/auth/signup` with JSON body `{ "email": "you@gmail.com", "signup_secret": "<BETA_SIGNUP_SECRET>" }`.
-3. **Login**: `POST http://localhost:8000/api/auth/google` with JSON body `{ "id_token": "..." }`. Cookies are set automatically.
-4. **Profile**: `GET http://localhost:8000/api/profile` -- Postman sends the `access_token` cookie automatically.
-5. **Refresh**: `POST http://localhost:8000/api/auth/refresh` -- Postman sends the `refresh_token` cookie; both cookies are renewed.
-6. **Logout**: `POST http://localhost:8000/api/auth/logout` -- both cookies are cleared.
 
 ## Running Tests
 
 ```bash
 # Make sure MongoDB is running first
 pytest tests/ -v
-```
-
-## Project Structure
-
-```
-src/
-  main.py                          Application entry point
-  core/
-    config.py                      Settings via pydantic-settings
-    db.py                          Motor client, connection, indexes
-    log.py                         Logging configuration
-    errors.py                      HTTP error helpers
-    dependencies.py                FastAPI dependencies (auth guard)
-    security/
-      jwt.py                       Access token create / verify
-      refresh_tokens.py            Refresh token generation
-      hashing.py                   SHA-256 token hashing
-      cookies.py                   HttpOnly cookie helpers
-      objectid.py                  Pydantic v2 ObjectId type
-  modules/
-    auth/
-      router.py                    Auth endpoints
-      schemas.py                   Request / response models
-      service.py                   Auth use-cases
-      repository.py                MongoDB queries (users + sessions)
-      allowlist_service.py         Signup + allowlist enforcement
-      allowlist_repository.py      MongoDB queries (allowed_emails)
-    profile/
-      router.py                    Profile endpoint
-      schemas.py                   Profile response models
-      service.py                   Profile use-case
-      repository.py                MongoDB queries (user lookup)
-  shared/
-    schemas.py                     Shared models (future)
-    utils.py                       Shared utilities (future)
-tests/
-  test_health.py                   Health endpoint integration test
 ```
