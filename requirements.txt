@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+motor
+pydantic[email]
+pydantic-settings
+google-auth
+requests
+PyJWT
+python-multipart
+eval-type-backport
+httpx
+pytest
+pytest-asyncio
