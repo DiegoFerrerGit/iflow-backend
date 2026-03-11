@@ -19,7 +19,7 @@ brew install python@3.12
 ```
 
 Verify the installation:
-ß
+
 ```bash
 python3.12 --version
 ```
@@ -66,7 +66,14 @@ For production, set real values via environment variables (they override the fil
 ### 5. Run the API
 
 ```bash
-uvicorn src.main:app --reload --port 8000
+# 1. Activate the virtual environment
+source .venv/bin/activate
+
+# 2. If port 8000 is already in use, kill the process
+lsof -ti:8000 | xargs kill -9
+
+# 3. Start the server
+uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 The API will be available at `http://localhost:8000`.
