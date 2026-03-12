@@ -20,11 +20,11 @@ def get_db() -> AsyncIOMotorDatabase:
 
 async def connect_db() -> None:
     global _client, _db
-    logger.info("Connecting to MongoDB at %s", settings.MONGODB_URI)
+    logger.info("Connecting to MongoDB")
     _client = AsyncIOMotorClient(settings.MONGODB_URI)
     _db = _client[settings.MONGODB_DB_NAME]
     await _db.command("ping")
-    logger.info("Connected to MongoDB database '%s'", settings.MONGODB_DB_NAME)
+    logger.info("Connected to MongoDB")
 
 
 async def close_db() -> None:

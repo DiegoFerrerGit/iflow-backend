@@ -58,14 +58,13 @@ It must show `Python 3.12.x`.
 
 ### 4. Configure environment variables
 
-- **Local:** `.env.local` – sensible defaults for local development (MongoDB local, etc.).
-- **Production:** `.env.prod` – template for production (MongoDB Atlas, secure cookies, etc.). Copy it, fill in real values (MongoDB URI, secrets, frontend URL), then run with:
+The app requires these variables (no defaults). If missing, it fails to start:
 
-  ```bash
-  ENV_FILE=.env.prod uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
-  ```
+- `MONGODB_URI`, `MONGODB_DB_NAME`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `GOOGLE_OAUTH_CLIENT_ID`, `FRONTEND_ORIGIN`
 
-  This lets you test production config from your machine before deploying.
+- **Local:** Copy `.env.example` to `.env.local` and fill in values. `.env.local` is gitignored.
+- **Production (e.g. Render):** Set all variables as environment variables in the dashboard. Do not use .env files.
+- **Test prod config locally:** `ENV_FILE=.env.prod uvicorn src.main:app ...`
 
 ### 5. Run the API
 
