@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 
 from src.core.config import settings
 from src.core.errors import OdinErrorCodes, business_error, not_found_error
+from src.modules.currency import service as currency_service
 from src.modules.odin import repository as repo
 from src.modules.odin.schemas import (
     AllocationBoxDetailResponse,
@@ -34,6 +35,12 @@ async def _simulate_delay() -> None:
     delay = settings.API_DELAY_SECONDS
     if delay > 0:
         await asyncio.sleep(delay)
+
+
+async def _get_exchange_rate() -> float:
+    """Use live rate from currency API; fallback to config if unavailable."""
+    rate, _ = await currency_service.get_rate_for_display()
+    return rate
 
 
 # ---------------------------------------------------------------------------
@@ -283,7 +290,7 @@ async def _require_item(user_id: str, sub_id: str, item_id: str) -> dict:
 
 async def get_overview(user_id: str) -> OdinOverviewResponse:
     await _simulate_delay()
-    rate = settings.USD_TO_ARS_RATE_DEFAULT
+    rate = await _get_exchange_rate()
 
     sources = await repo.find_income_sources_by_user(user_id)
     boxes = await repo.find_allocation_boxes_by_user(user_id)
@@ -346,7 +353,7 @@ async def get_box_detail(
     user_id: str, box_id: str
 ) -> AllocationBoxDetailResponse:
     await _simulate_delay()
-    rate = settings.USD_TO_ARS_RATE_DEFAULT
+    rate = await _get_exchange_rate()
     box = await _require_box(user_id, box_id)
     subs = await repo.find_subcategories_by_box(user_id, box_id)
 
@@ -393,7 +400,7 @@ async def get_subcategory_detail(
     user_id: str, box_id: str, sub_id: str
 ) -> SubCategoryDetailResponse:
     await _simulate_delay()
-    rate = settings.USD_TO_ARS_RATE_DEFAULT
+    rate = await _get_exchange_rate()
     box = await _require_box(user_id, box_id)
     await _require_subcategory(user_id, box_id, sub_id)
 
@@ -516,7 +523,7 @@ def _box_to_doc(data: AllocationBoxCreate | AllocationBoxUpdate) -> dict:
 
 async def list_allocation_boxes(user_id: str) -> list[AllocationBoxDto]:
     await _simulate_delay()
-    rate = settings.USD_TO_ARS_RATE_DEFAULT
+    rate = await _get_exchange_rate()
     sources = await repo.find_income_sources_by_user(user_id)
     boxes = await repo.find_allocation_boxes_by_user(user_id)
     all_subs = await repo.find_all_subcategories_by_user(user_id)
@@ -541,7 +548,8 @@ async def create_allocation_box(
 
     doc = await repo.create_allocation_box(user_id, _box_to_doc(data))
     logger.info("Allocation box created: %s", doc["_id"])
-    return await _build_box_dto(doc, user_id, settings.USD_TO_ARS_RATE_DEFAULT)
+    rate = await _get_exchange_rate()
+    return await _build_box_dto(doc, user_id, rate)
 
 
 async def update_allocation_box(
@@ -561,7 +569,8 @@ async def update_allocation_box(
             OdinErrorCodes.ALLOCATION_BOX_NOT_FOUND,
             "The allocation box was not found.",
         )
-    return await _build_box_dto(doc, user_id, settings.USD_TO_ARS_RATE_DEFAULT)
+    rate = await _get_exchange_rate()
+    return await _build_box_dto(doc, user_id, rate)
 
 
 async def delete_allocation_box(user_id: str, box_id: str) -> None:
@@ -598,7 +607,8 @@ async def create_subcategory(
     await _require_box(user_id, box_id)
     doc = await repo.create_subcategory(user_id, box_id, _sub_to_doc(data))
     logger.info("Subcategory created: %s", doc["_id"])
-    return await _build_sub_dto(doc, user_id, settings.USD_TO_ARS_RATE_DEFAULT)
+    rate = await _get_exchange_rate()
+    return await _build_sub_dto(doc, user_id, rate)
 
 
 async def update_subcategory(
@@ -612,7 +622,8 @@ async def update_subcategory(
             OdinErrorCodes.SUBCATEGORY_NOT_FOUND,
             "The subcategory was not found.",
         )
-    return await _build_sub_dto(doc, user_id, settings.USD_TO_ARS_RATE_DEFAULT)
+    rate = await _get_exchange_rate()
+    return await _build_sub_dto(doc, user_id, rate)
 
 
 async def delete_subcategory(
