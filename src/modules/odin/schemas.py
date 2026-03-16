@@ -243,10 +243,20 @@ class OnboardingCompletedResponse(BaseModel):
 
 
 class AllocationBoxDetailResponse(BaseModel):
+    allocation_box_id: str
+    allocation_box_name: str
+    allocation_box_type: Literal["permanent", "temporary"]
+    allocation_box_calculation_type: Literal["percentage", "absolute"]
     available_amount_to_assign: float
     sub_categories: list[AllocationSubCategoryDto]
 
 
 class SubCategoryDetailResponse(BaseModel):
+    allocation_box_id: str
+    allocation_box_name: str
+    allocation_box_type: Literal["permanent", "temporary"]
+    allocation_box_calculation_type: Literal["percentage", "absolute"]
+    sub_category_id: str
+    sub_category_name: str
     available_amount_to_assign: float
     items: list[AllocationItemDto]

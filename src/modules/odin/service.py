@@ -387,6 +387,10 @@ async def get_box_detail(
         sub_dtos.append(_sub_dto(sub, display))
 
     return AllocationBoxDetailResponse(
+        allocation_box_id=str(box["_id"]),
+        allocation_box_name=box["name"],
+        allocation_box_type=box["type"],
+        allocation_box_calculation_type=box["calculationType"],
         available_amount_to_assign=round(available, 2),
         sub_categories=sub_dtos,
     )
@@ -402,7 +406,7 @@ async def get_subcategory_detail(
     await _simulate_delay()
     rate = await _get_exchange_rate()
     box = await _require_box(user_id, box_id)
-    await _require_subcategory(user_id, box_id, sub_id)
+    sub = await _require_subcategory(user_id, box_id, sub_id)
 
     items = await repo.find_items_by_subcategory(user_id, sub_id)
 
@@ -422,6 +426,12 @@ async def get_subcategory_detail(
         available = max(0.0, summary.unassigned_amount_in_usd)
 
     return SubCategoryDetailResponse(
+        allocation_box_id=str(box["_id"]),
+        allocation_box_name=box["name"],
+        allocation_box_type=box["type"],
+        allocation_box_calculation_type=box["calculationType"],
+        sub_category_id=str(sub["_id"]),
+        sub_category_name=sub["name"],
         available_amount_to_assign=round(available, 2),
         items=[_item_dto(i) for i in items],
     )
