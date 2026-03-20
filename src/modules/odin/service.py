@@ -137,6 +137,7 @@ def _box_dto(doc: dict, calculated_usd: float) -> AllocationBoxDto:
         savings_target=_nested_amount(doc, "savingsTarget"),
         icon=doc["icon"],
         color=doc["color"],
+        background=doc.get("background") or "",
         calculated_amount_in_usd=round(calculated_usd, 2),
     )
 
@@ -506,6 +507,7 @@ def _box_to_doc(data: AllocationBoxCreate | AllocationBoxUpdate) -> dict:
         "description": data.description,
         "type": data.type,
         "calculationType": data.calculation_type,
+        "background": data.background,
         "icon": data.icon,
         "color": data.color,
         "percentageOfPool": data.percentage_of_pool,

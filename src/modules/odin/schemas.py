@@ -77,6 +77,7 @@ class AllocationBoxCreate(BaseModel):
     savings_target: AmountWithCurrency | None = None
     icon: str
     color: str
+    background: str | None = None
 
     model_config = {"extra": "forbid"}
 
@@ -136,6 +137,7 @@ class AllocationBoxDto(BaseModel):
     savings_target: AmountWithCurrency | None = None
     icon: str
     color: str
+    background: str = ""
     calculated_amount_in_usd: float
 
     @model_serializer(mode="wrap")

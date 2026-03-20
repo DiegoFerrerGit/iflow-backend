@@ -36,6 +36,7 @@ _BOX_EXAMPLES = {
             "percentage_of_pool": 35,
             "icon": "trending_up",
             "color": "emerald",
+            "background": "https://example.com/backgrounds/emerald.png",
         },
     },
     "permanent_absolute": {
@@ -51,6 +52,7 @@ _BOX_EXAMPLES = {
             "calculation_type": "absolute",
             "icon": "home",
             "color": "crimson",
+            "background": "https://example.com/backgrounds/crimson.png",
         },
     },
     "temporary_percentage": {
@@ -69,6 +71,7 @@ _BOX_EXAMPLES = {
             "savings_target": {"amount": 12000, "currency": "USD"},
             "icon": "security",
             "color": "gold",
+            "background": "https://example.com/backgrounds/gold.png",
         },
     },
     "temporary_absolute": {
@@ -86,6 +89,7 @@ _BOX_EXAMPLES = {
             "savings_target": {"amount": 12000, "currency": "USD"},
             "icon": "security",
             "color": "gold",
+            "background": "https://example.com/backgrounds/gold.png",
         },
     },
 }
@@ -102,6 +106,7 @@ _BOX_RESPONSE_EXAMPLES = {
             "percentage_of_pool": 35,
             "icon": "trending_up",
             "color": "emerald",
+            "background": "https://example.com/backgrounds/emerald.png",
             "calculated_amount_in_usd": 1050.0,
         },
     },
@@ -115,6 +120,7 @@ _BOX_RESPONSE_EXAMPLES = {
             "calculation_type": "absolute",
             "icon": "home",
             "color": "crimson",
+            "background": "https://example.com/backgrounds/crimson.png",
             "calculated_amount_in_usd": 0.0,
         },
     },
@@ -131,6 +137,7 @@ _BOX_RESPONSE_EXAMPLES = {
             "savings_target": {"amount": 12000, "currency": "USD"},
             "icon": "security",
             "color": "gold",
+            "background": "https://example.com/backgrounds/gold.png",
             "calculated_amount_in_usd": 300.0,
         },
     },
@@ -146,6 +153,7 @@ _BOX_RESPONSE_EXAMPLES = {
             "savings_target": {"amount": 12000, "currency": "USD"},
             "icon": "security",
             "color": "gold",
+            "background": "https://example.com/backgrounds/gold.png",
             "calculated_amount_in_usd": 0.0,
         },
     },
